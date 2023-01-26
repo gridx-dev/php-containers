@@ -1,0 +1,15 @@
+FROM dev.hub.init6.com.pl:5000/core.ubuntu:dev-1.0.0
+
+ARG libxml2=libxml2-v2.10.3 
+WORKDIR /usr/src
+
+RUN curl -O https://gitlab.gnome.org/GNOME/libxml2/-/archive/v2.10.3/${libxml2}.tar.gz \
+ && curl -O https://www.php.net/distributions/${php}.tar.gz \
+ && curl -O https://raw.githubusercontent.com/wp-cli/builds/gh-pages/phar/wp-cli.phar \
+ && tar vxf ${libxml2}.tar.gz \
+ && apt-get -y install autogen automake libtool  pkgconf  libsqlite3-dev \
+ && cd /usr/src/${libxml2} \
+ && ./autogen.sh \
+ && ./configure \ 
+ && make -j8 \
+ && make install 

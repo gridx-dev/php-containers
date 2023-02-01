@@ -1,5 +1,5 @@
 dist := ubuntu
-VERSION := 0.1.10
+VERSION := 0.1.13
 
 help:           
 	@egrep '^[a-zA-Z0-9_-]+:.*?## .*$$' $(MAKEFILE_LIST) | sort | awk 'BEGIN {FS = ":.*?## "}; {printf "\033[36m%-20s\033[0m %s\n", $$1, $$2}'
@@ -8,48 +8,48 @@ default: listrepo
 
 #AMD64
 build-amd64: ## buduj obraz dla arch. AMD64
-	docker build -f Dockerfile.$(dist)  -t php-8.1.$(dist).amd64:dev-$(VERSION) .
-	docker tag php-8.1.$(dist).amd64:dev-$(VERSION) dev.hub.init6.com.pl:5000/php-8.1.$(dist).amd64:dev-$(VERSION)
+	docker build -f Dockerfile.$(dist)  -t php-8.1-fpm.$(dist).amd64:dev-$(VERSION) .
+	docker tag php-8.1-fpm.$(dist).amd64:dev-$(VERSION) dev.hub.init6.com.pl:5000/php-8.1-fpm.$(dist).amd64:dev-$(VERSION)
 push-amd64:  ## przeslij obraz dla arch. AMD64 do repozytorium
-	docker push dev.hub.init6.com.pl:5000/php-8.1.$(dist).amd64:dev-$(VERSION)
+	docker push dev.hub.init6.com.pl:5000/php-8.1-fpm.$(dist).amd64:dev-$(VERSION)
 manifest-amd64: ## generuj manifest dla arch. AMD64
-	docker manifest inspect --insecure dev.hub.init6.com.pl:5000/php-8.1.$(dist).amd64:dev-$(VERSION)
+	docker manifest inspect --insecure dev.hub.init6.com.pl:5000/php-8.1-fpm.$(dist).amd64:dev-$(VERSION)
 
 #ARM64
 build-arm64: ## buduj obraz dla arch. ARM64
-	docker buildx build -f Dockerfile.$(dist) --platform linux/arm64  -t php-8.1.$(dist).arm64:dev-$(VERSION) . --load
-	docker tag php-8.1.$(dist).arm64:dev-$(VERSION) dev.hub.init6.com.pl:5000/php-8.1.$(dist).arm64:dev-$(VERSION)
+	docker buildx build -f Dockerfile.$(dist) --platform linux/arm64  -t php-8.1-fpm.$(dist).arm64:dev-$(VERSION) . --load
+	docker tag php-8.1-fpm.$(dist).arm64:dev-$(VERSION) dev.hub.init6.com.pl:5000/php-8.1-fpm.$(dist).arm64:dev-$(VERSION)
 push-arm64:  ## przeslij obraz dla arch. ARM64 do repozytorium
-	docker push dev.hub.init6.com.pl:5000/php-8.1.$(dist).arm64:dev-$(VERSION)
+	docker push dev.hub.init6.com.pl:5000/php-8.1-fpm.$(dist).arm64:dev-$(VERSION)
 manifest-arm64: ## generuj manifest dla arch. ARM64
-	docker manifest inspect --insecure dev.hub.init6.com.pl:5000/php-8.1.$(dist).arm64:dev-$(VERSION)
+	docker manifest inspect --insecure dev.hub.init6.com.pl:5000/php-8.1-fpm.$(dist).arm64:dev-$(VERSION)
 
 #ARMv7
 build-v7: ## buduj obraz dla arch. ARMv7
-	docker buildx build -f Dockerfile.$(dist) --platform linux/arm/v7  -t php-8.1.$(dist).armv7:dev-$(VERSION) . --load
-	docker tag php-8.1.$(dist).armv7:dev-$(VERSION) dev.hub.init6.com.pl:5000/php-8.1.$(dist).armv7:dev-$(VERSION)
+	docker buildx build -f Dockerfile.$(dist) --platform linux/arm/v7  -t php-8.1-fpm.$(dist).armv7:dev-$(VERSION) . --load
+	docker tag php-8.1-fpm.$(dist).armv7:dev-$(VERSION) dev.hub.init6.com.pl:5000/php-8.1-fpm.$(dist).armv7:dev-$(VERSION)
 push-armv7: ## przeslij obraz dla arch. ARMv7 do repozytorium
-	docker push dev.hub.init6.com.pl:5000/php-8.1.$(dist).armv7:dev-$(VERSION)
+	docker push dev.hub.init6.com.pl:5000/php-8.1-fpm.$(dist).armv7:dev-$(VERSION)
 manifest-v7: ## generuj manifest dla arch. ARMv7
-	docker manifest inspect --insecure dev.hub.init6.com.pl:5000/php-8.1.$(dist).armv7:dev-$(VERSION)
+	docker manifest inspect --insecure dev.hub.init6.com.pl:5000/php-8.1-fpm.$(dist).armv7:dev-$(VERSION)
 
 manifest-rocky-create: ## generuj manifest dla wszystkich architetkur dla RockyLinux
-	docker manifest create --insecure  dev.hub.init6.com.pl:5000/php-8.1.$(dist):dev-$(VERSION) \
-	dev.hub.init6.com.pl:5000/php-8.1.$(dist).amd64:dev-$(VERSION) \
-	dev.hub.init6.com.pl:5000/php-8.1.$(dist).arm64:dev-$(VERSION) 
-	docker manifest push --insecure dev.hub.init6.com.pl:5000/php-8.1.$(dist):dev-$(VERSION)
-	docker manifest inspect --insecure dev.hub.init6.com.pl:5000/php-8.1.$(dist):dev-$(VERSION)
+	docker manifest create --insecure  dev.hub.init6.com.pl:5000/php-8.1-fpm.$(dist):dev-$(VERSION) \
+	dev.hub.init6.com.pl:5000/php-8.1-fpm.$(dist).amd64:dev-$(VERSION) \
+	dev.hub.init6.com.pl:5000/php-8.1-fpm.$(dist).arm64:dev-$(VERSION) 
+	docker manifest push --insecure dev.hub.init6.com.pl:5000/php-8.1-fpm.$(dist):dev-$(VERSION)
+	docker manifest inspect --insecure dev.hub.init6.com.pl:5000/php-8.1-fpm.$(dist):dev-$(VERSION)
 
 manifest-ubuntu-create: ## generuj manifest dla wszystkich architetkur dla Ubuntu
-	docker manifest create --insecure  dev.hub.init6.com.pl:5000/php-8.1.$(dist):dev-$(VERSION) \
-	dev.hub.init6.com.pl:5000/php-8.1.$(dist).amd64:dev-$(VERSION) \
-	dev.hub.init6.com.pl:5000/php-8.1.$(dist).arm64:dev-$(VERSION) \
-	dev.hub.init6.com.pl:5000/php-8.1.$(dist).armv7:dev-$(VERSION)
-	docker manifest push --insecure dev.hub.init6.com.pl:5000/php-8.1.$(dist):dev-$(VERSION) 
-	docker manifest inspect --insecure dev.hub.init6.com.pl:5000/php-8.1.$(dist):dev-$(VERSION)
+	docker manifest create --insecure  dev.hub.init6.com.pl:5000/php-8.1-fpm.$(dist):dev-$(VERSION) \
+	dev.hub.init6.com.pl:5000/php-8.1-fpm.$(dist).amd64:dev-$(VERSION) \
+	dev.hub.init6.com.pl:5000/php-8.1-fpm.$(dist).arm64:dev-$(VERSION) \
+	dev.hub.init6.com.pl:5000/php-8.1-fpm.$(dist).armv7:dev-$(VERSION)
+	docker manifest push --insecure dev.hub.init6.com.pl:5000/php-8.1-fpm.$(dist):dev-$(VERSION) 
+	docker manifest inspect --insecure dev.hub.init6.com.pl:5000/php-8.1-fpm.$(dist):dev-$(VERSION)
 
 clean-man: ## Czysc manifesty
-	docker manifest rm dev.hub.init6.com.pl:5000/php-8.1.$(dist):dev-$(VERSION)
+	docker manifest rm dev.hub.init6.com.pl:5000/php-8.1-fpm.$(dist):dev-$(VERSION)
 
 
 listrepo: ## Listuj obrazy w repozytorium

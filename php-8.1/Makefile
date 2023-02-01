@@ -1,6 +1,6 @@
 dist := ubuntu
 hub := dev.hub.init6.com.pl
-VERSION := 0.0.1
+VERSION := 0.0.2
 
 help:           
 	@egrep '^[a-zA-Z0-9_-]+:.*?## .*$$' $(MAKEFILE_LIST) | sort | awk 'BEGIN {FS = ":.*?## "}; {printf "\033[36m%-20s\033[0m %s\n", $$1, $$2}'

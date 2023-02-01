@@ -1,5 +1,9 @@
 FROM php:8.1-fpm
 RUN apt-get update && apt-get install -y \
+        procps \
+        psmisc \
+        inotify-tools \
+        supervisor \
         libfreetype6-dev \
         libjpeg62-turbo-dev \
         libpng-dev \
@@ -18,5 +22,12 @@ RUN apt-get update && apt-get install -y \
     && docker-php-ext-enable imagick \ 
     && curl -O https://raw.githubusercontent.com/wp-cli/builds/gh-pages/phar/wp-cli.phar \
     && chmod +x wp-cli.phar \
-    && mv wp-cli.phar /usr/local/bin/wp 
-    
+    && mv wp-cli.phar /usr/local/bin/wp \
+    && mkdir -p /var/log/supervisor \
+    && echo "[program:fpm]"  > /etc/supervisor/conf.d/fpm.conf \
+    && echo 'command=php-fpm' >> /etc/supervisor/conf.d/fpm.conf \
+    && echo "[program:notify]"  > /etc/supervisor/conf.d/notify.conf \
+    && echo "command=/usr/local/sbin/notify.sh" >> /etc/supervisor/conf.d/notify.conf 
+
+COPY notify.sh /usr/local/sbin/
+CMD ["/usr/bin/supervisord","-n", "-c","/etc/supervisor/supervisord.conf"]

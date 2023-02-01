@@ -1,0 +1,45 @@
+# https://github.com/devilbox/docker-php-fpm-5.2/blob/master/Dockerfile
+FROM rockylinux:9
+
+RUN dnf -y install epel-release elrepo-release && dnf -y install gcc-toolset-9-gcc gcc-toolset-9-gcc-c++ gcc-toolset-10-annobin libxml2-devel openssl-devel sqlite-devel  libxslt-devel libtidy-devel freetype-devel dnf-plugins-core gcc  wget zip postgresql-devel patch curl-devel perl msmtp mailx
+
+WORKDIR /usr/src
+RUN wget http://museum.php.net/php5/php-5.2.17.tar.gz -O php-5.2.17.tar.gz  --no-check-certificate && wget https://www.openssl.org/source/old/1.0.1/openssl-1.0.1e.tar.gz --no-check-certificate && gzip -cd openssl-1.0.1e.tar.gz  | tar vxf - && gzip -cd php-5.2.17.tar.gz | tar vxf - && wget "https://storage.googleapis.com/google-code-archive-downloads/v2/code.google.com/php52-backports/php52-backports-security-20130717.patch" -O php52-backports-security-20130717.patch
+WORKDIR /usr/src/openssl-1.0.1e
+RUN ./config --prefix=/usr/local/openssl-1.0.1e   && make && make  install_sw
+
+#compile php
+
+COPY mysql-5.6.29.tgz /usr/src
+WORKDIR /usr/src
+RUN gzip -cd mysql-5.6.29.tgz | tar vxf - && mv mysql-5.6.29 /usr/local/
+
+WORKDIR /usr/src/php-5.2.17
+
+#RUN sed -i 's/unixd_config\./ap_unixd_config\./g' sapi/apache2handler/php_functions.c
+#RUN sed -i 's/ap_get_server_version/ap_get_server_banner/g' sapi/apache2handler/php_functions.c
+
+WORKDIR /usr/src
+COPY jpeg.tgz /usr/src/
+COPY libpng-1.6.37.tar.gz /usr/src/
+RUN gzip -cd jpeg.tgz | tar vxf - && gzip -cd libpng-1.6.37.tar.gz | tar vxf -
+WORKDIR /usr/src/libpng-1.6.37
+RUN ./configure --prefix=/usr/local/libpng-1.6.37 --enable-shared   && make -j 12 && make install
+
+WORKDIR /usr/src/jpeg-6b
+RUN mkdir -p /usr/local/jpeg-6b/bin && mkdir -p /usr/local/jpeg-6b/man/man1 && mkdir -p /usr/local/jpeg-6b/include && mkdir -p /usr/local/jpeg-6b/lib
+COPY config.guess /usr/src/jpeg-6b/
+COPY config.sub /usr/src/jpeg-6b/
+RUN ./configure --prefix=/usr/local/jpeg-6b --enable-shared   && make && make install && mkdir -p /usr/local/logs/
+
+WORKDIR /usr/src/php-5.2.17
+COPY php-5.2.17-fpm.patch /usr/src/php-5.2.17
+RUN patch -p1 < php-5.2.17-fpm.patch
+RUN patch -p1 < /usr/src/php52-backports-security-20130717.patch && source /opt/rh/gcc-toolset-9/enable && './configure' '--prefix=/usr/local/php-5.2.17' '--enable-fpm' '--with-libxml-dir=/usr/lib64/' '--enable-exif' '--enable-gd-native-ttf' '--with-xsl' '--with-mysql=shared,/usr/local/mysql-5.6.29'  '--with-jpeg-dir=/usr/local/jpeg-6b' '--with-png-dir=/usr/local/libpng-1.6.37' '--enable-mbstring' '--with-gd' '--with-zlib' '--with-tidy' '--with-pdo-mysql=/usr/local/mysql-5.6.29'  '--with-mysqli=shared,/usr/local/mysql-5.6.29/bin/mysql_config' '--with-freetype-dir'  '--with-xmlrpc' '--enable-soap' '--with-openssl=/usr/local/openssl-1.0.1e' '--enable-zip' '--enable-ftp' '--with-gettext'  '--enable-bcmath' --disable-posix  --with-curl '--with-openssl=/usr/local/openssl-1.0.1e' --enable-fastcgi && make -j12 && make install
+
+COPY php.ini /usr/local/php-5.2.17/lib
+COPY php-fpm.conf /usr/local/php-5.2.17/etc
+COPY php-fpm /usr/local/php-5.2.17/sbin
+EXPOSE 9000
+CMD ["/usr/local/php-5.2.17/sbin/php-fpm"]
+

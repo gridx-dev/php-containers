@@ -11,6 +11,7 @@ COPY --from=apache /lib/x86_64-linux-gnu/libexpat.so.1 /lib/x86_64-linux-gnu/lib
 COPY --from=apache /usr/bin/supervisord /usr/bin/supervisord
 COPY --from=apache /usr/bin/supervisorctl /usr/bin/supervisorctl
 COPY --from=apache /etc/supervisor/supervisord.conf /etc/supervisor/supervisord.conf
+COPY --from=apache /usr/bin/inotifywait /usr/bin/inotifywait
 
 COPY --from=apache /usr/bin/python3  /usr/bin/python3
 COPY --from=apache /usr/lib/python3.9 /usr/lib/python3.9
@@ -73,10 +74,16 @@ COPY --from=php /usr/lib/x86_64-linux-gnu/libXau.so.6 /usr/lib/x86_64-linux-gnu/
 COPY --from=php /usr/lib/x86_64-linux-gnu/libXdmcp.so.6 /usr/lib/x86_64-linux-gnu/libXdmcp.so.6
 COPY --from=php /usr/lib/x86_64-linux-gnu/libbsd.so.0 /usr/lib/x86_64-linux-gnu/libbsd.so.0
 COPY --from=php /usr/lib/x86_64-linux-gnu/libmd.so.0 /usr/lib/x86_64-linux-gnu/libmd.so.0
+COPY --from=php /usr/lib/x86_64-linux-gnu/libinotifytools.so.0 /usr/lib/x86_64-linux-gnu/libinotifytools.so.0
 
 COPY --from=php /etc/supervisor/conf.d/fpm.conf /etc/supervisor/conf.d/fpm.conf
-COPY notify.sh /usr/local/sbin/
-RUN mkdir /var/log/supervisor/
+COPY notify_apache.sh notify_fpm.sh /usr/local/sbin/
+RUN mkdir /var/log/supervisor/ \
+ && echo "[program:notify_apache]"  > /etc/supervisor/conf.d/notify_apache.conf \
+ && echo "command=/usr/local/sbin/notify_apache.sh" >> /etc/supervisor/conf.d/notify_apache.conf \
+ && echo "[program:notify_fpm]"  > /etc/supervisor/conf.d/notify_fpm.conf \
+ && echo "command=/usr/local/sbin/notify_fpm.sh" >> /etc/supervisor/conf.d/notify_fpm.conf
+
 
 EXPOSE 80
 CMD ["/usr/bin/supervisord","-n", "-c","/etc/supervisor/supervisord.conf"]

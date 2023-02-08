@@ -1,4 +1,6 @@
 # https://github.com/devilbox/docker-php-fpm-5.2/blob/master/Dockerfile
+# Problem "cc1: error: '-mfloat-abi=hard': selected architecture lacks an FPU" wynika z użycia opcji "-mfloat-abi=hard" podczas kompilacji na architekturze bez FPU (ang. floating point unit). 
+
 FROM rockylinux:9
 
 RUN dnf -y install epel-release elrepo-release && dnf -y install gcc-toolset-9-gcc gcc-toolset-9-gcc-c++ gcc-toolset-10-annobin libxml2-devel openssl-devel sqlite-devel  libxslt-devel libtidy-devel freetype-devel dnf-plugins-core gcc  wget zip postgresql-devel patch curl-devel perl msmtp mailx

@@ -1,5 +1,8 @@
-FROM dev.hub.init6.com.pl:5000/core.ubuntu:dev-0.1.1
+FROM dev.hub.init6.com.pl:5000/core.ubuntu:dev-0.1.1 AS final
+#FROM dev.hub.init6.com.pl:5000/mysql.ubuntu.armv7:dev-5.6.43 AS mysql
+FROM dev.hub.init6.com.pl:5000/mysql.ubuntu.amd64:dev-5.6.43 AS mysql
 
+FROM final
 RUN apt-get install wget libxslt-dev  -y
 
 WORKDIR /usr/src
@@ -7,17 +10,9 @@ RUN wget http://museum.php.net/php5/php-5.2.17.tar.gz -O php-5.2.17.tar.gz  --no
 WORKDIR /usr/src/openssl-1.0.1e
 RUN ./config --prefix=/usr/local/openssl-1.0.1e   && make && make  install_sw
 
-#compile php
 
-WORKDIR /usr/src
-RUN wget https://downloads.mysql.com/archives/get/p/23/file/mysql-5.6.43.tar.gz
-RUN gzip -cd mysql-5.6.43.tar.gz | tar vxf -
-WORKDIR /usr/src/mysql-5.6.43
-RUN apt-get -y install cmake ncurses-dev  libssl-dev bison
-RUN cmake -DCMAKE_INSTALL_PREFIX=/usr/local/mysql  -DWITH_INNOBASE_STORAGE_ENGINE=1  -DENABLE_DOWNLOADS=1 .
-RUN make -j8
-RUN make install
 
+COPY --from=mysql /dbms/mysql-5.6.43 /dbms/mysql-5.6.43
 WORKDIR /usr/src/php-5.2.17
 
 #RUN sed -i 's/unixd_config\./ap_unixd_config\./g' sapi/apache2handler/php_functions.c
@@ -43,7 +38,8 @@ RUN patch -p1 < php-5.2.17-fpm.patch
 RUN apt-get install -y libfreetype-dev libtidy-dev gcc-9 g++-9 
 RUN update-alternatives --install /usr/bin/gcc gcc /usr/bin/gcc-9 9
 RUN update-alternatives --install /usr/bin/g++ g++ /usr/bin/g++-9 9
-RUN patch -p1 < /usr/src/php52-backports-security-20130717.patch &&  './configure' '--prefix=/usr/local/php-5.2.17' '--enable-fpm' '--with-libxml-dir=/usr/lib64/' '--enable-exif' '--enable-gd-native-ttf' '--with-xsl' '--with-mysql=shared,/usr/local/mysql'  '--with-jpeg-dir=/usr/local/jpeg-6b' '--with-png-dir=/usr/local/libpng-1.6.37' '--enable-mbstring' '--with-gd' '--with-zlib' '--with-tidy' '--with-pdo-mysql=/usr/local/mysql'  '--with-mysqli=shared,/usr/local/mysql/bin/mysql_config' '--with-freetype-dir'  '--with-xmlrpc' '--enable-soap' '--with-openssl=/usr/local/openssl-1.0.1e' '--enable-zip' '--enable-ftp' '--with-gettext'  '--enable-bcmath' --disable-posix  '--with-openssl=/usr/local/openssl-1.0.1e' --enable-fastcgi 
+RUN patch -p1 < /usr/src/php52-backports-security-20130717.patch 
+RUN './configure' '--prefix=/usr/local/php-5.2.17' '--enable-fpm' '--with-libxml-dir=/usr/lib64/' '--enable-exif' '--enable-gd-native-ttf' '--with-xsl' '--with-mysql=shared,/dbms/mysql-5.6.43'  '--with-jpeg-dir=/usr/local/jpeg-6b' '--with-png-dir=/usr/local/libpng-1.6.37' '--enable-mbstring' '--with-gd' '--with-zlib' '--with-tidy' '--with-pdo-mysql=/dbms/mysql-5.6.43'  '--with-mysqli=shared,/dbms/mysql-5.6.43/bin/mysql_config' '--with-freetype-dir'  '--with-xmlrpc' '--enable-soap' '--with-openssl=/usr/local/openssl-1.0.1e' '--enable-zip' '--enable-ftp' '--with-gettext'  '--enable-bcmath' --disable-posix  '--with-openssl=/usr/local/openssl-1.0.1e' --enable-fastcgi 
 RUN make -j12 && make install
 
 COPY php.ini /usr/local/php-5.2.17/lib

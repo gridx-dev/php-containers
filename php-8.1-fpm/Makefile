@@ -1,5 +1,5 @@
 dist := ubuntu
-VERSION := 0.1.13
+VERSION := 1.0.0
 
 help:           
 	@egrep '^[a-zA-Z0-9_-]+:.*?## .*$$' $(MAKEFILE_LIST) | sort | awk 'BEGIN {FS = ":.*?## "}; {printf "\033[36m%-20s\033[0m %s\n", $$1, $$2}'

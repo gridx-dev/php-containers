@@ -10,8 +10,15 @@ COPY --from=apache /usr/lib/x86_64-linux-gnu/libaprutil-1.so.0 /usr/lib/x86_64-l
 COPY --from=apache /lib/x86_64-linux-gnu/libexpat.so.1 /lib/x86_64-linux-gnu/libexpat.so.1
 COPY --from=apache /usr/bin/supervisord /usr/bin/supervisord
 COPY --from=apache /usr/bin/supervisorctl /usr/bin/supervisorctl
-COPY --from=apache /usr/bin/supervisorctl /usr/bin/supervisorctl
-COPY --from=apache /etc/supervisor/conf.d /etc/supervisor/conf.d
+COPY --from=apache /etc/supervisor/supervisord.conf /etc/supervisor/supervisord.conf
+
+COPY --from=apache /usr/bin/python3  /usr/bin/python3
+COPY --from=apache /usr/lib/python3.9 /usr/lib/python3.9
+COPY --from=apache /usr/lib/python3 /usr/lib/python3
+COPY --from=apache /usr/lib/python3/dist-packages/supervisor/ /usr/lib/python3/dist-packages/supervisor/
+
+
+COPY --from=apache /etc/supervisor/conf.d/apache.conf /etc/supervisor/conf.d/apache.conf
 
 COPY --from=php /usr/local/etc/php /usr/local/etc/php
 COPY --from=php /usr/local/etc/php-fpm.conf /usr/local/etc/php-fpm.conf
@@ -67,8 +74,10 @@ COPY --from=php /usr/lib/x86_64-linux-gnu/libXdmcp.so.6 /usr/lib/x86_64-linux-gn
 COPY --from=php /usr/lib/x86_64-linux-gnu/libbsd.so.0 /usr/lib/x86_64-linux-gnu/libbsd.so.0
 COPY --from=php /usr/lib/x86_64-linux-gnu/libmd.so.0 /usr/lib/x86_64-linux-gnu/libmd.so.0
 
+COPY --from=php /etc/supervisor/conf.d/fpm.conf /etc/supervisor/conf.d/fpm.conf
+COPY notify.sh /usr/local/sbin/
+RUN mkdir /var/log/supervisor/
 
+EXPOSE 80
+CMD ["/usr/bin/supervisord","-n", "-c","/etc/supervisor/supervisord.conf"]
 
-
-
-#CMD ["/usr/local/sbin/nginx", "-g", "daemon off;"]

@@ -1,0 +1,46 @@
+FROM dev.hub.init6.com.pl:5000/core.ubuntu:dev-0.1.1 AS final
+FROM dev.hub.init6.com.pl:5000/mysql.ubuntu.armv7:dev-5.6.43 AS mysql
+
+
+FROM final
+
+COPY --from=mysql /dbms/mysql-5.6.43 /dbms/mysql-5.6.43
+RUN apt-get install wget libxslt-dev libc6-dev libssl-dev -y
+
+WORKDIR /usr/src
+RUN wget http://museum.php.net/php5/php-5.2.17.tar.gz -O php-5.2.17.tar.gz  --no-check-certificate && wget https://www.openssl.org/source/old/1.0.1/openssl-1.0.1e.tar.gz --no-check-certificate && gzip -cd openssl-1.0.1e.tar.gz  | tar vxf - && gzip -cd php-5.2.17.tar.gz | tar vxf - && wget "https://storage.googleapis.com/google-code-archive-downloads/v2/code.google.com/php52-backports/php52-backports-security-20130717.patch" -O php52-backports-security-20130717.patch
+WORKDIR /usr/src/openssl-1.0.1e
+RUN ./Configure linux-armv4 --prefix=/usr/local/openssl-1.0.1e  && make -j8 && make  install_sw
+#RUN ./config --prefix=/usr/local/openssl-1.0.1e -mfloat-abi=soft  && make && make  install_sw
+
+
+WORKDIR /usr/src
+COPY jpeg.tgz /usr/src/
+COPY libpng-1.6.37.tar.gz /usr/src/
+RUN gzip -cd jpeg.tgz | tar vxf - && gzip -cd libpng-1.6.37.tar.gz | tar vxf -
+WORKDIR /usr/src/libpng-1.6.37
+RUN ./configure --prefix=/usr/local/libpng-1.6.37 --enable-shared   && make -j 12 && make install
+
+WORKDIR /usr/src/jpeg-6b
+RUN mkdir -p /usr/local/jpeg-6b/bin && mkdir -p /usr/local/jpeg-6b/man/man1 && mkdir -p /usr/local/jpeg-6b/include && mkdir -p /usr/local/jpeg-6b/lib
+COPY config.guess /usr/src/jpeg-6b/
+COPY config.sub /usr/src/jpeg-6b/
+RUN ./configure --prefix=/usr/local/jpeg-6b --enable-shared   && make -j8 && make install && mkdir -p /usr/local/logs/
+
+WORKDIR /usr/src/php-5.2.17
+COPY php-5.2.17-fpm.patch /usr/src/php-5.2.17
+RUN patch -p1 < php-5.2.17-fpm.patch
+
+RUN apt-get install -y libfreetype-dev libtidy-dev gcc-9 g++-9 
+RUN update-alternatives --install /usr/bin/gcc gcc /usr/bin/gcc-9 9
+RUN update-alternatives --install /usr/bin/g++ g++ /usr/bin/g++-9 9
+RUN './configure' '--prefix=/usr/local/php-5.2.17' '--enable-fpm' '--with-libxml-dir=/usr/lib64/' '--enable-exif' '--enable-gd-native-ttf' '--with-xsl' '--with-mysql=shared,/dbms/mysql-5.6.43'  '--with-jpeg-dir=/usr/local/jpeg-6b' '--with-png-dir=/usr/local/libpng-1.6.37' '--enable-mbstring' '--with-gd' '--with-zlib' '--with-tidy' '--with-pdo-mysql=/dbms/mysql-5.6.43'  '--with-mysqli=shared,/dbms/mysql-5.6.43/bin/mysql_config' '--with-freetype-dir'  '--with-xmlrpc' '--enable-soap'  '--enable-zip' '--enable-ftp' '--with-gettext'  '--enable-bcmath' --disable-posix   --enable-fastcgi
+RUN make -j12 && make install
+
+
+COPY php.ini /usr/local/php-5.2.17/lib
+COPY php-fpm.conf /usr/local/php-5.2.17/etc
+COPY php-fpm /usr/local/php-5.2.17/sbin
+EXPOSE 9000
+CMD ["/usr/local/php-5.2.17/sbin/php-fpm"]
+

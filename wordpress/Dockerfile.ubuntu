@@ -33,6 +33,30 @@ COPY --from=php /usr/lib/x86_64-linux-gnu/libcurl.so.4 /usr/lib/x86_64-linux-gnu
 COPY --from=php /usr/lib/x86_64-linux-gnu/libonig.so.5 /usr/lib/x86_64-linux-gnu/libonig.so.5
 COPY --from=php /usr/lib/x86_64-linux-gnu/libargon2.so.1 /usr/lib/x86_64-linux-gnu/libargon2.so.1
 COPY --from=php /usr/lib/x86_64-linux-gnu/libicuuc.so.67 /usr/lib/x86_64-linux-gnu/libicuuc.so.67
+COPY --from=php /usr/lib/x86_64-linux-gnu/libnghttp2.so.14 /usr/lib/x86_64-linux-gnu/libnghttp2.so.14
+COPY --from=php /usr/lib/x86_64-linux-gnu/librtmp.so.1 /usr/lib/x86_64-linux-gnu/librtmp.so.1
+COPY --from=php /usr/lib/x86_64-linux-gnu/libssh2.so.1 /usr/lib/x86_64-linux-gnu/libssh2.so.1
+COPY --from=php /usr/lib/x86_64-linux-gnu/libpsl.so.5 /usr/lib/x86_64-linux-gnu/libpsl.so.5
+COPY --from=php /usr/lib/x86_64-linux-gnu/libldap_r-2.4.so.2 /usr/lib/x86_64-linux-gnu/libldap_r-2.4.so.2
+COPY --from=php /usr/lib/x86_64-linux-gnu/libbrotlidec.so.1 /usr/lib/x86_64-linux-gnu/libbrotlidec.so.1
+COPY --from=php /usr/lib/x86_64-linux-gnu/liblber-2.4.so.2 /usr/lib/x86_64-linux-gnu/liblber-2.4.so.2 
+COPY --from=php /usr/lib/x86_64-linux-gnu/libicudata.so.67  /usr/lib/x86_64-linux-gnu/libicudata.so.67
+COPY --from=php /usr/lib/x86_64-linux-gnu/libsasl2.so.2  /usr/lib/x86_64-linux-gnu/libsasl2.so.2
+COPY --from=php /usr/lib/x86_64-linux-gnu/libbrotlicommon.so.1  /usr/lib/x86_64-linux-gnu/libbrotlicommon.so.1
+COPY --from=php /usr/lib/x86_64-linux-gnu/libpng16.so.16 /usr/lib/x86_64-linux-gnu/libpng16.so.16
+COPY --from=php /usr/lib/x86_64-linux-gnu/libjpeg.so.62 /usr/lib/x86_64-linux-gnu/libjpeg.so.62
+COPY --from=php /usr/lib/x86_64-linux-gnu/libfreetype.so.6 /usr/lib/x86_64-linux-gnu/libfreetype.so.6
+COPY --from=php /usr/lib/x86_64-linux-gnu/libgomp.so.1 /usr/lib/x86_64-linux-gnu/libgomp.so.1
+COPY --from=php /usr/lib/x86_64-linux-gnu/libMagickWand-6.Q16.so.6 /usr/lib/x86_64-linux-gnu/libMagickWand-6.Q16.so.6 
+COPY --from=php /usr/lib/x86_64-linux-gnu/libMagickCore-6.Q16.so.6 /usr/lib/x86_64-linux-gnu/libMagickCore-6.Q16.so.6
+COPY --from=php /usr/lib/x86_64-linux-gnu/libzip.so.4 /usr/lib/x86_64-linux-gnu/libzip.so.4
+COPY --from=php /usr/lib/x86_64-linux-gnu/libsodium.so.23 /usr/lib/x86_64-linux-gnu/libsodium.so.23
+COPY --from=php /usr/lib/x86_64-linux-gnu/libicuio.so.67 /usr/lib/x86_64-linux-gnu/libicuio.so.67
+COPY --from=php /usr/lib/x86_64-linux-gnu/libicui18n.so.67  /usr/lib/x86_64-linux-gnu/libicui18n.so.67
+COPY --from=php /usr/lib/x86_64-linux-gnu/libX11.so.6 /usr/lib/x86_64-linux-gnu/libX11.so.6
+COPY --from=php /usr/lib/x86_64-linux-gnu/liblcms2.so.2 /usr/lib/x86_64-linux-gnu/liblcms2.so.2
+COPY --from=php /usr/lib/x86_64-linux-gnu/liblqr-1.so.0 /usr/lib/x86_64-linux-gnu/liblqr-1.so.0
+
 
 
 

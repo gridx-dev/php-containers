@@ -1,0 +1,89 @@
+FROM dev.hub.init6.com.pl:5000/php-8.2-fpm.ubuntu.armv7:dev-0.1.13 AS php
+FROM dev.hub.init6.com.pl:5000/httpd.ubuntu.armv7:dev-0.1.6 AS apache
+
+FROM ubuntu:latest
+
+COPY --from=apache /usr/local/apache2 /usr/local/apache2
+COPY --from=apache /usr/lib/arm-linux-gnueabihf/libapr-1.so.0 /usr/lib/arm-linux-gnueabihf/libapr-1.so.0
+COPY --from=apache /usr/lib/arm-linux-gnueabihf/libaprutil-1.so.0 /usr/lib/arm-linux-gnueabihf/libaprutil-1.so.0
+COPY --from=apache /lib/arm-linux-gnueabihf/libexpat.so.1 /lib/arm-linux-gnueabihf/libexpat.so.1
+COPY --from=apache /usr/bin/supervisord /usr/bin/supervisord
+COPY --from=apache /usr/bin/supervisorctl /usr/bin/supervisorctl
+COPY --from=apache /etc/supervisor/supervisord.conf /etc/supervisor/supervisord.conf
+COPY --from=apache /usr/bin/inotifywait /usr/bin/inotifywait
+
+COPY --from=apache /usr/bin/python3  /usr/bin/python3
+COPY --from=apache /usr/lib/python3.9 /usr/lib/python3.9
+COPY --from=apache /usr/lib/python3 /usr/lib/python3
+COPY --from=apache /usr/lib/python3/dist-packages/supervisor/ /usr/lib/python3/dist-packages/supervisor/
+
+
+COPY --from=apache /etc/supervisor/conf.d/apache.conf /etc/supervisor/conf.d/apache.conf
+
+COPY --from=php /usr/local/etc/php /usr/local/etc/php
+COPY --from=php /usr/local/etc/php-fpm.conf /usr/local/etc/php-fpm.conf
+COPY --from=php /usr/local/etc/php-fpm.d /usr/local/etc/php-fpm.d
+COPY --from=php /usr/local/sbin/php-fpm /usr/local/sbin/php-fpm
+COPY --from=php /usr/local/bin/php /usr/local/bin/php
+COPY --from=php /usr/local/include/php /usr/local/include/php
+COPY --from=php /usr/local/lib/php /usr/local/lib/php
+COPY --from=php /usr/local/php /usr/local/php
+COPY --from=php /usr/local/php/php /usr/local/php/php
+
+
+COPY --from=php /lib/arm-linux-gnueabihf/libreadline.so.8 /lib/arm-linux-gnueabihf/libreadline.so.8
+COPY --from=php /usr/lib/arm-linux-gnueabihf/libxml2.so.2 /usr/lib/arm-linux-gnueabihf/libxml2.so.2
+COPY --from=php /usr/lib/arm-linux-gnueabihf/libssl.so.1.1 /usr/lib/arm-linux-gnueabihf/libssl.so.1.1
+COPY --from=php /usr/lib/arm-linux-gnueabihf/libcrypto.so.1.1 /usr/lib/arm-linux-gnueabihf/libcrypto.so.1.1
+COPY --from=php /usr/lib/arm-linux-gnueabihf/libsqlite3.so.0 /usr/lib/arm-linux-gnueabihf/libsqlite3.so.0
+COPY --from=php /usr/lib/arm-linux-gnueabihf/libcurl.so.4 /usr/lib/arm-linux-gnueabihf/libcurl.so.4
+COPY --from=php /usr/lib/arm-linux-gnueabihf/libonig.so.5 /usr/lib/arm-linux-gnueabihf/libonig.so.5
+COPY --from=php /usr/lib/arm-linux-gnueabihf/libargon2.so.1 /usr/lib/arm-linux-gnueabihf/libargon2.so.1
+COPY --from=php /usr/lib/arm-linux-gnueabihf/libicuuc.so.67 /usr/lib/arm-linux-gnueabihf/libicuuc.so.67
+COPY --from=php /usr/lib/arm-linux-gnueabihf/libnghttp2.so.14 /usr/lib/arm-linux-gnueabihf/libnghttp2.so.14
+COPY --from=php /usr/lib/arm-linux-gnueabihf/librtmp.so.1 /usr/lib/arm-linux-gnueabihf/librtmp.so.1
+COPY --from=php /usr/lib/arm-linux-gnueabihf/libssh2.so.1 /usr/lib/arm-linux-gnueabihf/libssh2.so.1
+COPY --from=php /usr/lib/arm-linux-gnueabihf/libpsl.so.5 /usr/lib/arm-linux-gnueabihf/libpsl.so.5
+COPY --from=php /usr/lib/arm-linux-gnueabihf/libldap_r-2.4.so.2 /usr/lib/arm-linux-gnueabihf/libldap_r-2.4.so.2
+COPY --from=php /usr/lib/arm-linux-gnueabihf/libbrotlidec.so.1 /usr/lib/arm-linux-gnueabihf/libbrotlidec.so.1
+COPY --from=php /usr/lib/arm-linux-gnueabihf/liblber-2.4.so.2 /usr/lib/arm-linux-gnueabihf/liblber-2.4.so.2 
+COPY --from=php /usr/lib/arm-linux-gnueabihf/libicudata.so.67  /usr/lib/arm-linux-gnueabihf/libicudata.so.67
+COPY --from=php /usr/lib/arm-linux-gnueabihf/libsasl2.so.2  /usr/lib/arm-linux-gnueabihf/libsasl2.so.2
+COPY --from=php /usr/lib/arm-linux-gnueabihf/libbrotlicommon.so.1  /usr/lib/arm-linux-gnueabihf/libbrotlicommon.so.1
+COPY --from=php /usr/lib/arm-linux-gnueabihf/libpng16.so.16 /usr/lib/arm-linux-gnueabihf/libpng16.so.16
+COPY --from=php /usr/lib/arm-linux-gnueabihf/libjpeg.so.62 /usr/lib/arm-linux-gnueabihf/libjpeg.so.62
+COPY --from=php /usr/lib/arm-linux-gnueabihf/libfreetype.so.6 /usr/lib/arm-linux-gnueabihf/libfreetype.so.6
+COPY --from=php /usr/lib/arm-linux-gnueabihf/libgomp.so.1 /usr/lib/arm-linux-gnueabihf/libgomp.so.1
+COPY --from=php /usr/lib/arm-linux-gnueabihf/libMagickWand-6.Q16.so.6 /usr/lib/arm-linux-gnueabihf/libMagickWand-6.Q16.so.6 
+COPY --from=php /usr/lib/arm-linux-gnueabihf/libMagickCore-6.Q16.so.6 /usr/lib/arm-linux-gnueabihf/libMagickCore-6.Q16.so.6
+COPY --from=php /usr/lib/arm-linux-gnueabihf/libzip.so.4 /usr/lib/arm-linux-gnueabihf/libzip.so.4
+COPY --from=php /usr/lib/arm-linux-gnueabihf/libsodium.so.23 /usr/lib/arm-linux-gnueabihf/libsodium.so.23
+COPY --from=php /usr/lib/arm-linux-gnueabihf/libicuio.so.67 /usr/lib/arm-linux-gnueabihf/libicuio.so.67
+COPY --from=php /usr/lib/arm-linux-gnueabihf/libicui18n.so.67  /usr/lib/arm-linux-gnueabihf/libicui18n.so.67
+COPY --from=php /usr/lib/arm-linux-gnueabihf/libX11.so.6 /usr/lib/arm-linux-gnueabihf/libX11.so.6
+COPY --from=php /usr/lib/arm-linux-gnueabihf/liblcms2.so.2 /usr/lib/arm-linux-gnueabihf/liblcms2.so.2
+COPY --from=php /usr/lib/arm-linux-gnueabihf/liblqr-1.so.0 /usr/lib/arm-linux-gnueabihf/liblqr-1.so.0
+COPY --from=php /usr/lib/arm-linux-gnueabihf/libfftw3.so.3 /usr/lib/arm-linux-gnueabihf/libfftw3.so.3
+COPY --from=php /usr/lib/arm-linux-gnueabihf/libfontconfig.so.1 /usr/lib/arm-linux-gnueabihf/libfontconfig.so.1
+COPY --from=php /usr/lib/arm-linux-gnueabihf/libXext.so.6 /usr/lib/arm-linux-gnueabihf/libXext.so.6
+COPY --from=php /usr/lib/arm-linux-gnueabihf/libltdl.so.7 /usr/lib/arm-linux-gnueabihf/libltdl.so.7
+COPY --from=php /usr/lib/arm-linux-gnueabihf/libxcb.so.1  /usr/lib/arm-linux-gnueabihf/libxcb.so.1
+COPY --from=php /usr/lib/arm-linux-gnueabihf/libglib-2.0.so.0 /usr/lib/arm-linux-gnueabihf/libglib-2.0.so.0
+COPY --from=php /usr/lib/arm-linux-gnueabihf/libXau.so.6 /usr/lib/arm-linux-gnueabihf/libXau.so.6
+COPY --from=php /usr/lib/arm-linux-gnueabihf/libXdmcp.so.6 /usr/lib/arm-linux-gnueabihf/libXdmcp.so.6
+COPY --from=php /usr/lib/arm-linux-gnueabihf/libbsd.so.0 /usr/lib/arm-linux-gnueabihf/libbsd.so.0
+COPY --from=php /usr/lib/arm-linux-gnueabihf/libmd.so.0 /usr/lib/arm-linux-gnueabihf/libmd.so.0
+COPY --from=php /usr/lib/arm-linux-gnueabihf/libinotifytools.so.0 /usr/lib/arm-linux-gnueabihf/libinotifytools.so.0
+
+COPY --from=php /etc/supervisor/conf.d/fpm.conf /etc/supervisor/conf.d/fpm.conf
+COPY notify_apache.sh notify_fpm.sh /usr/local/sbin/
+RUN mkdir /var/log/supervisor/ \
+ && echo "[program:notify_apache]"  > /etc/supervisor/conf.d/notify_apache.conf  \
+ && echo "command=/usr/local/sbin/notify_apache.sh" >> /etc/supervisor/conf.d/notify_apache.conf  \
+ && echo "[program:notify_fpm]"  > /etc/supervisor/conf.d/notify_fpm.conf  \
+ && echo "command=/usr/local/sbin/notify_fpm.sh" >> /etc/supervisor/conf.d/notify_fpm.conf \
+
+
+EXPOSE 80
+CMD ["/usr/bin/supervisord","-n", "-c","/etc/supervisor/supervisord.conf"]
+

@@ -1,6 +1,5 @@
 FROM dev.hub.init6.com.pl:5000/core.ubuntu:dev-0.1.1 AS final
-FROM dev.hub.init6.com.pl:5000/mysql.ubuntu.armv7:dev-5.6.43 AS mysql
-#FROM dev.hub.init6.com.pl:5000/mysql.ubuntu.amd64:dev-5.6.43 AS mysql
+FROM dev.hub.init6.com.pl:5000/mysql.ubuntu.amd64:dev-5.6.43 AS mysql
 
 FROM final
 RUN apt-get install wget libxslt-dev  -y

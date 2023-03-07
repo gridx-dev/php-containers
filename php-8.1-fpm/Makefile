@@ -1,5 +1,7 @@
 dist := ubuntu
-VERSION := 1.0.0
+VERSION := 0.8.1
+sechub := sec.hub.init6.com.pl
+
 
 help:           
 	@egrep '^[a-zA-Z0-9_-]+:.*?## .*$$' $(MAKEFILE_LIST) | sort | awk 'BEGIN {FS = ":.*?## "}; {printf "\033[36m%-20s\033[0m %s\n", $$1, $$2}'
@@ -9,9 +11,12 @@ default: listrepo
 #AMD64
 build-amd64: ## buduj obraz dla arch. AMD64
 	docker build -f Dockerfile.$(dist)  -t php-8.1-fpm.$(dist).amd64:dev-$(VERSION) .
-	docker tag php-8.1-fpm.$(dist).amd64:dev-$(VERSION) dev.hub.init6.com.pl:5000/php-8.1-fpm.$(dist).amd64:dev-$(VERSION)
+	docker tag php-8.1-fpm.$(dist).amd64:dev-$(VERSION) dev.hub.init6.com.pl:5000/php-8.1-fpm.$(dist).amd64:dev-$(VERSION)	
+	docker tag php-8.1-fpm.$(dist).amd64:dev-$(VERSION) $(sechub):5000/php-8.1-fpm.$(dist).amd64:dev-$(VERSION)
+
 push-amd64:  ## przeslij obraz dla arch. AMD64 do repozytorium
 	docker push dev.hub.init6.com.pl:5000/php-8.1-fpm.$(dist).amd64:dev-$(VERSION)
+	docker push $(sechub):5000/php-8.1-fpm.$(dist).amd64:dev-$(VERSION)
 manifest-amd64: ## generuj manifest dla arch. AMD64
 	docker manifest inspect --insecure dev.hub.init6.com.pl:5000/php-8.1-fpm.$(dist).amd64:dev-$(VERSION)
 
